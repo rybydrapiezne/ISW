@@ -1,0 +1,3 @@
+[submodule "Assets/TK-Shared"]
+	path = Assets/TK-Shared
+	url = https://github.com/rybydrapiezne/TK-Shared.git
