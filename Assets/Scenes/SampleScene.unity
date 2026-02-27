@@ -5971,9 +5971,9 @@ MonoBehaviour:
   acceleration: 15
   walkSpeed: 4
   sprintSpeed: 6
-  crouchedSpeed: 3
+  crouchedSpeed: 2
   crouchHeight: 1.5
-  uncrouchCeilingLayers:
+  uncrouchCeilingLayer:
     serializedVersion: 2
     m_Bits: 119
   jumpHeight: 2
