@@ -1226,6 +1226,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &121281346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 121281347}
+  m_Layer: 7
+  m_Name: RootCameraPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &121281347
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 121281346}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.703, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 941925408}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &136468803
 GameObject:
   m_ObjectHideFlags: 0
@@ -5904,6 +5935,7 @@ GameObject:
   - component: {fileID: 941925412}
   - component: {fileID: 941925409}
   - component: {fileID: 941925411}
+  - component: {fileID: 941925413}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -5926,6 +5958,7 @@ Transform:
   m_Children:
   - {fileID: 1210177618}
   - {fileID: 1092709954}
+  - {fileID: 121281347}
   - {fileID: 544930344}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5968,10 +6001,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   characterController: {fileID: 941925409}
   playerCamera: {fileID: 1210177619}
+  headBobbing: {fileID: 941925413}
   acceleration: 15
   walkSpeed: 4
   sprintSpeed: 6
   crouchedSpeed: 2
+  baseHeadBobbingFreq: 10
+  baseHeadBobbingAmpl: 0.002
   crouchHeight: 1.5
   uncrouchCeilingLayer:
     serializedVersion: 2
@@ -6031,6 +6067,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   playerActionsController: {fileID: 941925410}
+--- !u!114 &941925413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941925407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5586b0f132ffe196b88dcf109e415a07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HeadBobbing
+  enable: 1
+  amplitude: 0.002
+  frequency: 10
+  cameraT: {fileID: 1092709954}
+  cameraHolder: {fileID: 121281347}
 --- !u!1 &952170391
 GameObject:
   m_ObjectHideFlags: 0
