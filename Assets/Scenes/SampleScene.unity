@@ -6008,6 +6008,7 @@ MonoBehaviour:
   crouchedSpeed: 2
   baseHeadBobbingFreq: 10
   baseHeadBobbingAmpl: 0.002
+  crouchToggle: 1
   crouchHeight: 1.5
   uncrouchCeilingLayer:
     serializedVersion: 2
@@ -6015,8 +6016,8 @@ MonoBehaviour:
   jumpHeight: 2
   lookSensitivity: {x: 0.1, y: 0.1}
   cameraNormalFOV: 60
-  cameraSprintFOV: 90
-  cameraFOVSmoothing: 1
+  cameraSprintFOV: 80
+  cameraFOVSmoothing: 3
   pitchLimit: 85
   CameraTarget: {fileID: 1092709954}
   moveInput: {x: 0, y: 0}
