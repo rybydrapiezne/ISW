@@ -283,7 +283,7 @@ public class AICore : MonoBehaviour
 
                 Vector3 retreatDirection = transform.position - playerTransform.position;
                 Vector3 retreatTarget = transform.position + retreatDirection.normalized * 2f;
-                agent.SetDestination(GetUniqueDestination(retreatTarget));
+                agent.SetDestination(retreatTarget);
             }
             else
             {
@@ -303,7 +303,7 @@ public class AICore : MonoBehaviour
         else
         {
             // Player out of range, chase
-            agent.SetDestination(GetUniqueDestination(playerTransform.position));
+            agent.SetDestination(playerTransform.position);
         }
     }
 
@@ -491,6 +491,7 @@ public class AICore : MonoBehaviour
     }
 
     // --- "First Come First Served" Destination Logic ---
+    // not used becasue was doing some crazy stuff to pathing
     private Vector3 GetUniqueDestination(Vector3 desiredTarget)
     {
         Vector3 finalTarget = desiredTarget;
