@@ -1,16 +1,24 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerShootingInputController : MonoBehaviour
+namespace PlayerShootingSystem
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [RequireComponent(typeof(PlayerShootingController))]
+    public class PlayerShootingInputController : MonoBehaviour
     {
-        
-    }
+        PlayerShootingController _shootingController;
+        void Awake()
+        {
+            _shootingController = GetComponent<PlayerShootingController>();
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        void OnShoot(InputValue inputValue)
+        {
+            Debug.Log(inputValue);
+            if (inputValue.isPressed)
+                _shootingController.Shoot();
+                
+        }
     }
 }
