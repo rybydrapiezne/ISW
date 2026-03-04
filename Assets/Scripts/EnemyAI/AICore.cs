@@ -32,6 +32,7 @@ public class AICore : MonoBehaviour
     [SerializeField] LayerMask sightObstaclesMask;
     [Tooltip("Height of eyes from ground level.")]
     [SerializeField] float eyeLevel = 1.7f;
+    float playerEyeLevel => playerTransform.GetComponent<PlayerActionsController>().eyeLevel;
     [Tooltip("The total angle of the enemy's field of view in degrees (e.g., 120 means 60 degrees to each side).")]
     public float fieldOfViewAngle = 120f;
     [Tooltip("Maximum distance the enemy can see the player.")]
@@ -318,7 +319,7 @@ public class AICore : MonoBehaviour
         if (distanceToPlayer > maxSightDistance) return false;
 
         Vector3 rayStartOrigin = transform.position + Vector3.up * eyeLevel;
-        Vector3 targetPosition = playerTransform.position + Vector3.up * 1f;
+        Vector3 targetPosition = playerTransform.position + Vector3.up * playerEyeLevel;
         Vector3 directionToPlayer = (targetPosition - rayStartOrigin).normalized;
 
         // 2. Field of View Angle Check
@@ -364,6 +365,7 @@ public class AICore : MonoBehaviour
         ChangeState(AIState.Alert);
         agent.isStopped = true;
 
+        Debug.Log("looking around for " + duration);
         float timer = 0f;
         while (timer < duration)
         {
@@ -379,8 +381,6 @@ public class AICore : MonoBehaviour
                     agent.angularSpeed * Time.deltaTime
                 );
             }
-
-            Debug.Log("looking around " + timer);
 
             if (HasLineOfSight())
             {
@@ -524,7 +524,7 @@ public class AICore : MonoBehaviour
         if (playerTransform == null) return;
 
         Vector3 rayStartOrigin = transform.position + Vector3.up * eyeLevel;
-        Vector3 targetPosition = playerTransform.position + Vector3.up * 1f;
+        Vector3 targetPosition = playerTransform.position + Vector3.up * playerEyeLevel;
         Vector3 directionToPlayer = (targetPosition - rayStartOrigin).normalized;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
@@ -533,7 +533,18 @@ public class AICore : MonoBehaviour
         // Draw the Raycast
         if (Physics.Raycast(rayStartOrigin, directionToPlayer, out RaycastHit hit, maxSightDistance, sightObstaclesMask))
         {
-            if (hit.collider.CompareTag(playerTag))
+            DrawVisibilityRaycast(rayStartOrigin, hit, angleToPlayer);
+        }
+        else
+        {
+            // Didn't hit anything
+            Gizmos.DrawLine(rayStartOrigin, rayStartOrigin + directionToPlayer * maxSightDistance);
+        }
+    }
+
+    private void DrawVisibilityRaycast(Vector3 rayStartOrigin, RaycastHit hit, float angleToPlayer)
+    {
+        if (hit.collider.CompareTag(playerTag))
             {
                 if (angleToPlayer > fieldOfViewAngle / 2f)
                 {
@@ -552,12 +563,6 @@ public class AICore : MonoBehaviour
                 Gizmos.DrawLine(rayStartOrigin, hit.point);
                 Gizmos.DrawSphere(hit.point, 0.1f);
             }
-        }
-        else
-        {
-            // Didn't hit anything
-            Gizmos.DrawLine(rayStartOrigin, rayStartOrigin + directionToPlayer * maxSightDistance);
-        }
     }
 #endif
 }

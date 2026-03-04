@@ -6277,7 +6277,7 @@ MonoBehaviour:
   crouchedSpeed: 2
   baseHeadBobbingFreq: 10
   baseHeadBobbingAmpl: 0.002
-  crouchToggle: 1
+  crouchToggle: 0
   crouchHeight: 1.5
   uncrouchCeilingLayer:
     serializedVersion: 2
