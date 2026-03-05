@@ -277,12 +277,7 @@ public class AICore : MonoBehaviour
                     agent.angularSpeed * Time.deltaTime
                 );
 
-        if (!HasLineOfSight())
-        {
-            agent.SetDestination(playerTransform.position);
-        }
-
-        if (distanceToPlayer <= weaponRange)
+        if (distanceToPlayer <= weaponRange && HasLineOfSight())
         {
             if (distanceToPlayer <= optimalDistance)
             {
