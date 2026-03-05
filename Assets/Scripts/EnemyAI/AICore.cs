@@ -113,9 +113,12 @@ public class AICore : MonoBehaviour
     {
         if (currentHealth <= 0) return;
 
-        UpdateAlertSystem();
+        if (currentState != AIState.Combat)
+        {
+            UpdateAlertSystem();
 
-        OnAlertChanged?.Invoke(this, triggerMultiplier, currentAlertLevel);
+            OnAlertChanged?.Invoke(this, triggerMultiplier, currentAlertLevel);
+        }
 
         switch (currentState)
         {
@@ -399,7 +402,7 @@ public class AICore : MonoBehaviour
         ChangeState(AIState.Patrol);
     }
 
-    private IEnumerator SweepRotationRoutine(float duration, bool trackLastKnownPosition, float lookAngle=70f)
+    private IEnumerator SweepRotationRoutine(float duration, bool trackLastKnownPosition, float lookAngle = 70f)
     {
         float timer = 0f;
         bool lookingLeft = true;
@@ -423,7 +426,7 @@ public class AICore : MonoBehaviour
                         centerRotation,
                         agent.angularSpeed * Time.deltaTime
                     );
-                    
+
                     yield return null;
                     continue;
                 }
