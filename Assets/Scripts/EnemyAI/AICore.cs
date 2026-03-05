@@ -82,7 +82,6 @@ public class AICore : MonoBehaviour
     Vector3 lastKnownPlayerPosition;
     Coroutine _respawnCoroutine;
     
-    float currentExposureTimer = 0f;
     float lastAlertTime = 0f;
     int currentPatrolIndex = 0;
     bool isWaiting = false;
@@ -144,10 +143,6 @@ public class AICore : MonoBehaviour
 
         if (HasLineOfSight())
         {
-
-            // currentExposureTimer += Time.deltaTime * alertSensitivity;
-
-            // TM = exposure_time / distance [PH]
             triggerMultiplier += Time.deltaTime * alertSensitivity / distanceToPlayer;
             lastKnownPlayerPosition = playerTransform.position;
             lastAlertTime = Time.time;
@@ -166,7 +161,6 @@ public class AICore : MonoBehaviour
             {
                 triggerMultiplier = 0f;
             }
-            // currentExposureTimer = 0f;
 
             if (currentState != AIState.Combat && Time.time - lastAlertTime > timeToLoseAlertLevel)
             {

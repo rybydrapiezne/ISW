@@ -305,10 +305,7 @@ MonoBehaviour:
   alertSensitivity: 5
   hearingRadius: 30
   timeToLoseAlertLevel: 3
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  patrolPoints: []
   waitTimeAtWaypoint: 2
   currentState: 0
   currentAlertLevel: 0
