@@ -490,20 +490,20 @@ public class AICore : MonoBehaviour
     }
 
     // --- Damage Handling ---
-    public void TakeDamage(float amount)
+    public void Damage(float amount)
     {
-        currentHealth -= amount;
-
-        // If hit from stealth, immediately alert
-        if (currentState != AIState.Combat)
-        {
-            triggerMultiplier = 2f;
-            DetermineAlertLevel();
-        }
+        currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
 
         if (currentHealth <= 0)
         {
             Die();
+        }
+
+        // If hit from stealth, but not died, immediately alert
+        if (currentState != AIState.Combat)
+        {
+            triggerMultiplier = 2f;
+            DetermineAlertLevel();
         }
     }
 
