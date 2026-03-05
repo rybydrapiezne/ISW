@@ -62,7 +62,7 @@ namespace PlayerShootingSystem
                     float distance = hit.distance;
                     float multiplier = currentGun.gunInfo.damageFalloff.Evaluate(distance/100f);
                     float finalDamage = currentGun.gunInfo.flatDamage * multiplier;
-                    enemy.TakeDamage(finalDamage);
+                    enemy.Damage(finalDamage);
                 }
             }
         }
