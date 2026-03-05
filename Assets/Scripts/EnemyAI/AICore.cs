@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System;
 using TK_Shared._3DPlayerMovement;
 
-[RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(NavMeshAgent), typeof(Collider))]
 public class AICore : MonoBehaviour
 {
     // --- Enums ---
@@ -19,7 +18,7 @@ public class AICore : MonoBehaviour
     public static event Action<AICore> OnEnemyDied;
 
     // --- Configurations ---
-    [Header("General Settings")] 
+    [Header("General Settings")]
     [SerializeField] EnemyType enemyType = EnemyType.Glock;
     [Tooltip("The tag of the player object.")]
     [SerializeField] string playerTag = "Player";
@@ -81,7 +80,7 @@ public class AICore : MonoBehaviour
     Transform playerTransform;
     Vector3 lastKnownPlayerPosition;
     Coroutine _respawnCoroutine;
-    
+
     float lastAlertTime = 0f;
     int currentPatrolIndex = 0;
     bool isWaiting = false;
@@ -522,34 +521,6 @@ public class AICore : MonoBehaviour
         OnEnemyDied?.Invoke(this);
         activeCombatTargets.Remove(agent.destination);
         Destroy(gameObject);
-    }
-
-    // --- "First Come First Served" Destination Logic ---
-    // not used becasue was doing some crazy stuff to pathing
-    private Vector3 GetUniqueDestination(Vector3 desiredTarget)
-    {
-        Vector3 finalTarget = desiredTarget;
-        float avoidanceRadius = 2f; // How far apart they should stay
-
-        // Remove old destination for this specific agent
-        if (activeCombatTargets.Contains(agent.destination))
-        {
-            activeCombatTargets.Remove(agent.destination);
-        }
-
-        foreach (Vector3 existingTarget in activeCombatTargets)
-        {
-            if (Vector3.Distance(finalTarget, existingTarget) < avoidanceRadius)
-            {
-                // Target is taken, find a slight offset
-                Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * avoidanceRadius;
-                finalTarget += new Vector3(randomOffset.x, 0, randomOffset.y);
-            }
-        }
-
-        // Add new destination
-        activeCombatTargets.Add(finalTarget);
-        return finalTarget;
     }
 
 #if UNITY_EDITOR
