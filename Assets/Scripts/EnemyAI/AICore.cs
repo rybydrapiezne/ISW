@@ -82,6 +82,8 @@ public class AICore : MonoBehaviour
     // Static list to manage combat target positions to avoid overlap
     static List<Vector3> activeCombatTargets = new List<Vector3>();
 
+    [SerializeField] AlertNotificator alertNotificator;
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -111,6 +113,8 @@ public class AICore : MonoBehaviour
 
         UpdateAlertSystem();
 
+        alertNotificator.SetAlertProgress(triggerMultiplier, currentAlertLevel);
+
         switch (currentState)
         {
             case AIState.Patrol:
@@ -127,13 +131,15 @@ public class AICore : MonoBehaviour
 
     private void UpdateAlertSystem()
     {
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
         if (HasLineOfSight())
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-            currentExposureTimer += Time.deltaTime * alertSensitivity;
+            
+            // currentExposureTimer += Time.deltaTime * alertSensitivity;
 
             // TM = exposure_time / distance [PH]
-            triggerMultiplier = currentExposureTimer / distanceToPlayer;
+            triggerMultiplier += Time.deltaTime * alertSensitivity / distanceToPlayer;
             lastKnownPlayerPosition = playerTransform.position;
             lastAlertTime = Time.time;
 
@@ -142,13 +148,14 @@ public class AICore : MonoBehaviour
         else
         {
             // TM decay
-            if(currentExposureTimer > 0)
+            if(triggerMultiplier > 0)
             {
-                currentExposureTimer -= Time.deltaTime;
+                triggerMultiplier -= Time.deltaTime;
             } else
             {
-                currentExposureTimer = 0f;
+                triggerMultiplier = 0f;
             }
+            // currentExposureTimer = 0f;
 
             if (currentState != AIState.Combat && Time.time - lastAlertTime > timeToLoseAlertLevel)
             {
