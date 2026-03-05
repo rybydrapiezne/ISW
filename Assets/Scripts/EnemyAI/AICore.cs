@@ -360,7 +360,7 @@ public class AICore : MonoBehaviour
     {
         isWaiting = true;
         agent.isStopped = true;
-        yield return new WaitForSeconds(waitTimeAtWaypoint);
+        yield return StartCoroutine(SweepRotationRoutine(waitTimeAtWaypoint, false, 40));
         agent.isStopped = false;
         GoToNextPatrolPoint();
         isWaiting = false;
@@ -372,32 +372,7 @@ public class AICore : MonoBehaviour
         agent.isStopped = true;
 
         Debug.Log("looking around for " + duration);
-        float timer = 0f;
-        while (timer < duration)
-        {
-            Vector3 direction = (lastKnownPlayerPosition - transform.position).normalized;
-
-            if (direction != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-
-                transform.rotation = Quaternion.RotateTowards(
-                    transform.rotation,
-                    targetRotation,
-                    agent.angularSpeed * Time.deltaTime
-                );
-            }
-
-            if (HasLineOfSight())
-            {
-                timer = 0f;
-            }
-            else
-            {
-                timer += Time.deltaTime;
-            }
-            yield return null;
-        }
+        yield return StartCoroutine(SweepRotationRoutine(duration, true));
 
         agent.isStopped = false;
         ChangeState(AIState.Patrol); // Return to patrol
@@ -418,10 +393,63 @@ public class AICore : MonoBehaviour
         // Reached location, look around
         Debug.Log("investigating for " + duration + " seconds");
         agent.isStopped = true;
-        yield return new WaitForSeconds(duration);
+        yield return StartCoroutine(SweepRotationRoutine(duration, false));
 
         agent.isStopped = false;
         ChangeState(AIState.Patrol);
+    }
+
+    private IEnumerator SweepRotationRoutine(float duration, bool trackLastKnownPosition, float lookAngle=70f)
+    {
+        float timer = 0f;
+        bool lookingLeft = true;
+        Quaternion centerRotation = transform.rotation;
+
+        while (timer < duration)
+        {
+            if (trackLastKnownPosition)
+            {
+                Vector3 direction = (lastKnownPlayerPosition - transform.position).normalized;
+                if (direction != Vector3.zero)
+                {
+                    centerRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+                }
+
+                if (HasLineOfSight())
+                {
+                    timer = 0f;
+                    transform.rotation = Quaternion.RotateTowards(
+                        transform.rotation,
+                        centerRotation,
+                        agent.angularSpeed * Time.deltaTime
+                    );
+                    
+                    yield return null;
+                    continue;
+                }
+            }
+            else
+            {
+                if (HasLineOfSight()) break;
+            }
+
+            timer += Time.deltaTime;
+
+            Quaternion targetSweep = centerRotation * Quaternion.Euler(0, lookingLeft ? -lookAngle : lookAngle, 0);
+
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetSweep,
+                agent.angularSpeed * Time.deltaTime
+            );
+
+            if (Quaternion.Angle(transform.rotation, targetSweep) < 1f)
+            {
+                lookingLeft = !lookingLeft;
+            }
+
+            yield return null;
+        }
     }
 
     private void AlertNearbyEnemies()
@@ -441,8 +469,7 @@ public class AICore : MonoBehaviour
 
     private void Shoot()
     {
-        // Implementation depends on your weapon system.
-        // E.g., Instantiate projectile, play sound, apply cooldown.
+        // depends weapon system
         // currentAmmo--;
         Debug.Log($"{gameObject.name} is shooting!");
     }
@@ -490,7 +517,6 @@ public class AICore : MonoBehaviour
 
     private void Die()
     {
-        // Handle death (ragdoll, drop items, destroy object)
         Debug.Log($"{gameObject.name} died.");
         OnEnemyDied?.Invoke(this);
         activeCombatTargets.Remove(agent.destination);
@@ -535,7 +561,7 @@ public class AICore : MonoBehaviour
         Vector3 directionToPlayer = (targetPosition - rayStartOrigin).normalized;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-        Gizmos.color = Color.yellow; // Default color: trying to see
+        Gizmos.color = Color.black; // Default color: trying to see
 
         // Draw the Raycast
         if (Physics.Raycast(rayStartOrigin, directionToPlayer, out RaycastHit hit, maxSightDistance, sightObstaclesMask))

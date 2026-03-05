@@ -61,7 +61,6 @@ public class AlertNotificator : MonoBehaviour
 
     private void RefreshGlobalIndicator()
     {
-        Debug.Log("alert count: " + activeAlerts.Count);
         if (activeAlerts.Count == 0)
         {
             image.enabled = false;
