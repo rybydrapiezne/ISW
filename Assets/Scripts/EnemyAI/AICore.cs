@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 
 [RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Collider))]
 public class AICore : MonoBehaviour
 {
     // --- Enums ---
@@ -21,6 +22,8 @@ public class AICore : MonoBehaviour
     [SerializeField] EnemyType enemyType = EnemyType.Glock;
     [Tooltip("The tag of the player object.")]
     [SerializeField] string playerTag = "Player";
+    [Tooltip("Layer(s) of all other enemies")]
+    [SerializeField] LayerMask enemyLayer;
 
     [Header("Movement & Speed")]
     [SerializeField] float basePlayerVelocity = 4f;
@@ -221,7 +224,7 @@ public class AICore : MonoBehaviour
                 break;
             case AlertLevel.Extreme:
                 ChangeState(AIState.Combat);
-                AlertNearbyEnemies();
+                AlertNearbyEnemies(hearingRadius);
                 break;
         }
     }
@@ -374,7 +377,7 @@ public class AICore : MonoBehaviour
         ChangeState(AIState.Alert);
         agent.isStopped = true;
 
-        Debug.Log("looking around for " + duration);
+        Debug.Log("looking around for " + duration + " seconds");
         yield return StartCoroutine(SweepRotationRoutine(duration, true));
 
         agent.isStopped = false;
@@ -455,16 +458,16 @@ public class AICore : MonoBehaviour
         }
     }
 
-    private void AlertNearbyEnemies()
+    private void AlertNearbyEnemies(float radius)
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, hearingRadius);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius, enemyLayer);
         foreach (var hitCollider in hitColliders)
         {
             AICore nearbyEnemy = hitCollider.GetComponent<AICore>();
             if (nearbyEnemy != null && nearbyEnemy != this && nearbyEnemy.currentState != AIState.Combat)
             {
                 // Force them into combat
-                nearbyEnemy.triggerMultiplier = 2f; // Force above 1
+                nearbyEnemy.triggerMultiplier = 2f;
                 nearbyEnemy.DetermineAlertLevel();
             }
         }
@@ -474,7 +477,7 @@ public class AICore : MonoBehaviour
     {
         // depends weapon system
         // currentAmmo--;
-        Debug.Log($"{gameObject.name} is shooting!");
+        // Debug.Log($"{gameObject.name} is shooting!");
     }
 
     private IEnumerator ReloadRoutine()
