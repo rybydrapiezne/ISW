@@ -3,11 +3,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using static AICore;
 
-[RequireComponent(typeof(Image))]
+[RequireComponent(typeof(CanvasGroup))]
 public class AlertNotificator : MonoBehaviour
 {
-    Image image;
+    [SerializeField] Image image1;
+    [SerializeField] Image image2;
     private Dictionary<AICore, AlertData> activeAlerts = new Dictionary<AICore, AlertData>();
+    CanvasGroup cg;
 
     private struct AlertData
     {
@@ -17,7 +19,7 @@ public class AlertNotificator : MonoBehaviour
 
     void Awake()
     {
-        image = GetComponent<Image>();
+        cg = GetComponent<CanvasGroup>();
     }
 
     private void OnEnable()
@@ -63,11 +65,11 @@ public class AlertNotificator : MonoBehaviour
     {
         if (activeAlerts.Count == 0)
         {
-            image.enabled = false;
+            cg.alpha = 0;
             return;
         }
 
-        image.enabled = true;
+        cg.alpha = 1;
 
         float highestTM = 0f;
         AlertLevel highestLevel = AlertLevel.None;
@@ -87,25 +89,30 @@ public class AlertNotificator : MonoBehaviour
     private void SetAlertProgress(float value, AlertLevel alertLevel)
     {
         value = Mathf.Clamp(value, 0, 1);
-        image.fillAmount = value;
+        image1.fillAmount = value/5f;
+        image2.fillAmount = value/5f;
+        Color newColor = Color.clear;
 
         switch (alertLevel)
         {
             case AlertLevel.None:
-                image.color = Color.clear;
+                newColor = Color.clear;
                 break;
             case AlertLevel.Low:
-                image.color = Color.white;
+                newColor = Color.white;
                 break;
             case AlertLevel.Medium:
-                image.color = Color.gray;
+                newColor = Color.gray;
                 break;
             case AlertLevel.High:
-                image.color = Color.yellow;
+                newColor = Color.yellow;
                 break;
             case AlertLevel.Extreme:
-                image.color = Color.red;
+                newColor = Color.red;
                 break;
         }
+
+        image1.color = newColor;
+        image2.color = newColor;
     }
 }
