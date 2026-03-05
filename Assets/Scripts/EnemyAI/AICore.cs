@@ -19,7 +19,7 @@ public class AICore : MonoBehaviour
     public static event Action<AICore> OnEnemyDied;
 
     // --- Configurations ---
-    [Header("General Settings")]
+    [Header("General Settings")] 
     [SerializeField] EnemyType enemyType = EnemyType.Glock;
     [Tooltip("The tag of the player object.")]
     [SerializeField] string playerTag = "Player";
@@ -80,7 +80,8 @@ public class AICore : MonoBehaviour
     NavMeshAgent agent;
     Transform playerTransform;
     Vector3 lastKnownPlayerPosition;
-
+    Coroutine _respawnCoroutine;
+    
     float currentExposureTimer = 0f;
     float lastAlertTime = 0f;
     int currentPatrolIndex = 0;
@@ -89,7 +90,6 @@ public class AICore : MonoBehaviour
 
     // Static list to manage combat target positions to avoid overlap
     static List<Vector3> activeCombatTargets = new List<Vector3>();
-
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
