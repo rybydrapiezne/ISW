@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc5496a18bb9692b6a7cc67528f8a12e, type: 3}
-  m_Name: Handgun
+  m_Name: AutomaticGun
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShootingSystem.GunInfo
-  flatDamage: 20
-  isAutomatic: 0
-  fireRate: 0
+  flatDamage: 50
+  isAutomatic: 1
+  fireRate: 0.1
   damageFalloff:
     serializedVersion: 2
     m_Curve:
@@ -28,22 +28,22 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.22253376
-      value: 0.9615689
-      inSlope: -0.6167302
-      outSlope: -0.6167302
+      time: 0.3508829
+      value: 0.9930569
+      inSlope: -0.09377322
+      outSlope: -0.09377322
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.45495322
+      inWeight: 0.13134582
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1.0002367
-      value: 0.44716507
-      inSlope: -0.07646258
-      outSlope: -0.07646258
+      time: 0.9962882
+      value: 0.4988589
+      inSlope: 0.018007962
+      outSlope: 0.018007962
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.5772306
+      inWeight: 0.11102045
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

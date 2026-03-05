@@ -6,6 +6,8 @@ namespace PlayerShootingSystem
     public class GunInfo : ScriptableObject
     {
         public int flatDamage;
+        public bool isAutomatic;
+        public float fireRate;
         public AnimationCurve damageFalloff;
     }
 }
