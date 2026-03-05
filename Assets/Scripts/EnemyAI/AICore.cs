@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class AICore : MonoBehaviour
@@ -11,6 +11,10 @@ public class AICore : MonoBehaviour
     public enum AIState { Patrol, Alert, Combat }
     public enum AlertLevel { None, Low, Medium, High, Extreme } // Empty, Grey, Yellow, Red
     public enum EnemyType { Glock, Shotgun }
+
+    // --- Events ---
+    public static event Action<AICore, float, AlertLevel> OnAlertChanged;
+    public static event Action<AICore> OnEnemyDied;
 
     // --- Configurations ---
     [Header("General Settings")]
@@ -82,8 +86,6 @@ public class AICore : MonoBehaviour
     // Static list to manage combat target positions to avoid overlap
     static List<Vector3> activeCombatTargets = new List<Vector3>();
 
-    [SerializeField] AlertNotificator alertNotificator;
-
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -113,7 +115,7 @@ public class AICore : MonoBehaviour
 
         UpdateAlertSystem();
 
-        alertNotificator.SetAlertProgress(triggerMultiplier, currentAlertLevel);
+        OnAlertChanged?.Invoke(this, triggerMultiplier, currentAlertLevel);
 
         switch (currentState)
         {
@@ -135,7 +137,7 @@ public class AICore : MonoBehaviour
 
         if (HasLineOfSight())
         {
-            
+
             // currentExposureTimer += Time.deltaTime * alertSensitivity;
 
             // TM = exposure_time / distance [PH]
@@ -148,10 +150,12 @@ public class AICore : MonoBehaviour
         else
         {
             // TM decay
-            if(triggerMultiplier > 0)
+            if (triggerMultiplier > 0)
             {
                 triggerMultiplier -= Time.deltaTime;
-            } else
+                OnAlertChanged?.Invoke(this, triggerMultiplier, currentAlertLevel);
+            }
+            else
             {
                 triggerMultiplier = 0f;
             }
@@ -221,7 +225,7 @@ public class AICore : MonoBehaviour
 
     private void ChangeState(AIState newState)
     {
-        if(currentState == newState) return;
+        if (currentState == newState) return;
         currentState = newState;
         isWaiting = false; // Reset waiting flag
 
@@ -488,6 +492,7 @@ public class AICore : MonoBehaviour
     {
         // Handle death (ragdoll, drop items, destroy object)
         Debug.Log($"{gameObject.name} died.");
+        OnEnemyDied?.Invoke(this);
         activeCombatTargets.Remove(agent.destination);
         Destroy(gameObject);
     }
@@ -510,7 +515,7 @@ public class AICore : MonoBehaviour
             if (Vector3.Distance(finalTarget, existingTarget) < avoidanceRadius)
             {
                 // Target is taken, find a slight offset
-                Vector2 randomOffset = Random.insideUnitCircle * avoidanceRadius;
+                Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * avoidanceRadius;
                 finalTarget += new Vector3(randomOffset.x, 0, randomOffset.y);
             }
         }
@@ -547,24 +552,24 @@ public class AICore : MonoBehaviour
     private void DrawVisibilityRaycast(Vector3 rayStartOrigin, RaycastHit hit, float angleToPlayer)
     {
         if (hit.collider.CompareTag(playerTag))
+        {
+            if (angleToPlayer > fieldOfViewAngle / 2f)
             {
-                if (angleToPlayer > fieldOfViewAngle / 2f)
-                {
-                    Gizmos.color = Color.blue; // Blue: Player behind field of view
-                }
-                else
-                {
-                    Gizmos.color = Color.green; // Green: Sees Player
-                }
-                Gizmos.DrawLine(rayStartOrigin, hit.point);
-                Gizmos.DrawSphere(hit.point, 0.1f);
+                Gizmos.color = Color.blue; // Blue: Player behind field of view
             }
             else
             {
-                Gizmos.color = Color.red; // Red: Hit a wall/obstacle
-                Gizmos.DrawLine(rayStartOrigin, hit.point);
-                Gizmos.DrawSphere(hit.point, 0.1f);
+                Gizmos.color = Color.green; // Green: Sees Player
             }
+            Gizmos.DrawLine(rayStartOrigin, hit.point);
+            Gizmos.DrawSphere(hit.point, 0.1f);
+        }
+        else
+        {
+            Gizmos.color = Color.red; // Red: Hit a wall/obstacle
+            Gizmos.DrawLine(rayStartOrigin, hit.point);
+            Gizmos.DrawSphere(hit.point, 0.1f);
+        }
     }
 #endif
 }
